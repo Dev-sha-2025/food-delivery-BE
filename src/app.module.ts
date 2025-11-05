@@ -34,10 +34,7 @@ export class AppModule implements OnModuleInit {
   constructor(@InjectConnection() private readonly connection: Connection) {}
 
   onModuleInit() {
-    const dbName = this.connection?.db?.databaseName || '(unknown)';
-    const host = (this.connection as any)?.client?.s?.url || '(unknown URI)';
-
+    const dbName = this.connection?.db?.databaseName || '(unknown)'
     console.log('✅ Connected to MongoDB database:', dbName);
-    console.log('🔗 Connection string:', host);
   }
 }

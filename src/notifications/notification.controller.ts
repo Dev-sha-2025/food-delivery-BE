@@ -37,9 +37,15 @@ export class NotificationController {
     description: 'Filter by user ID',
     example: 'USER12345',
   })
+    @ApiQuery({
+    name: 'notificationId',
+    required: false,
+    description: 'Filter by user ID',
+    example: 'USER12345',
+  })
   @ApiResponse({ status: 200, description: 'List of notifications returned' })
-  getAll(@Query('restaurantId') restaurantId?: string, @Query('userId') userId?: string) {
-    return this.notificationService.getAll(restaurantId, userId);
+  getAll(@Query('restaurantId') restaurantId?: string, @Query('userId') userId?: string, @Query('notificationId') notificationId?: string) {
+    return this.notificationService.getAll(restaurantId, userId, notificationId);
   }
 
   @Get(':id')

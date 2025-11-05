@@ -76,9 +76,14 @@ _atLeastOneContactInfo?: string;
 export class UserResponseDto extends CreateUserDto {
   @ApiProperty({ description: 'Unique user ID', example: 'usr_12345' })
   _id: string;
+}
 
-  @ApiPropertyOptional({ description: 'Creation timestamp' })
-  createdOn?: Date;
+export class CreateUserResponseDto {
+  @ApiProperty({ example: 201 })
+  status: number;
+
+  @ApiProperty({ type: UserResponseDto })
+  data: UserResponseDto;
 }
 
 // export class UserResponseDto {

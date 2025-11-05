@@ -8,7 +8,6 @@ export interface Notification extends Document {
   userId: string;
   description: string;
   status: string;
-  dateTime: Date;
   isDeleted: boolean; // soft delete flag
 }
 
@@ -21,7 +20,6 @@ export const NotificationSchema = new Schema(
     userId: String,
     description: String,
     status: String,
-    dateTime: { type: Date, default: Date.now },
     isDeleted: { type: Boolean, default: false },
   },
   { strict: false, timestamps: true }

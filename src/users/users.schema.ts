@@ -6,7 +6,6 @@ export const UserSchema = new Schema({
   firstName: String,
   lastName: String,
   email: String,
-  createdOn: { type: Date, default: Date.now },
   userId: String,
 }, { strict: false,collection:'users',timestamps:true }); // allow dynamic fields
 

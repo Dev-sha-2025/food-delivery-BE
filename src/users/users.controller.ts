@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Query, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiOperation, ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto, GetUserDetailsDto, UserResponseDto } from './users.dto';
+import { CreateUserDto, CreateUserResponseDto, GetUserDetailsDto, UserResponseDto } from './users.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -36,7 +36,7 @@ export class UsersController {
 
     @Post('/create')
     @ApiOperation({ summary: 'Create or update user (if exists)' })
-    @ApiResponse({ status: 201, description: 'User created or updated', type: UserResponseDto })
+    @ApiResponse({ status: 201, description: 'User created or updated', type: CreateUserResponseDto })
     @ApiResponse({ status: 400, description: 'phoneNumber or email is required' })
     async createUser(@Body() userInput: CreateUserDto) {
         if (!userInput || (!userInput.phoneNumber && !userInput.email)) {

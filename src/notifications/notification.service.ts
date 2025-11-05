@@ -12,11 +12,12 @@ export class NotificationService {
     return await this.notificationModel.create(data);
   }
 
-  async getAll(restaurantId?: string, userId?: string) {
+  async getAll(restaurantId?: string, userId?: string, notificationId?: string) {
     const filter: any = { isDeleted: false };
 
     if (restaurantId) filter.restaurantId = restaurantId;
     if (userId) filter.userId = userId;
+    if (notificationId) filter._id = notificationId;
 
     return await this.notificationModel.find(filter).sort({ createdAt: -1 });
   }
