@@ -4,16 +4,21 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: false, // prevent buffering of logs
+    cors: true,        // enable CORS for all origins
+  });
 
   //Validation
-    app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: false, // do not remove unknown fields
       forbidNonWhitelisted: false, //  allow unknown fields
       transform: true, // auto-transform DTOs
     }),
   );
+
+  app.setGlobalPrefix('api');
 
   // Swagger setup
   const config = new DocumentBuilder()
@@ -26,7 +31,6 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT || 3000);
-  console.log(`🚀 Server running on http://localhost:${process.env.PORT || 3000}`);
-  console.log('📘 Swagger Docs → http://localhost:3000/api/docs');
+  console.log(`🚀 Server running on host ${process.env.PORT || 3000}`);
 }
 bootstrap();

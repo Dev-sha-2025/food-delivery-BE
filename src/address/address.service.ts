@@ -11,7 +11,6 @@ export class AddressService {
     async createAddress(data: CreateAddressDto) {
         if (data.addressId) {
             const { addressId, ...updateData } = data; // remove addressId from update body
-            console.log('Updating address with ID:', updateData);
             return await this.addressModel.findByIdAndUpdate(
                 { _id: addressId },
                 { $set: updateData }
@@ -28,7 +27,6 @@ export class AddressService {
         if (userId) {
             filter.userId = userId;
         }
-        console.log('Filter for getUserAddress:', filter);
         return await this.addressModel
             .findOne(filter);
     }

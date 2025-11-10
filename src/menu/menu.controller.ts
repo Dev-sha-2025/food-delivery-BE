@@ -33,7 +33,7 @@ export class MenuController {
     return this.menuService.updateMenu(id, dto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   @ApiOperation({ summary: "Soft delete menu item" })
   @ApiParam({ name: "id", example: "673bb63b9dec04c1c089ab16" })
   @ApiResponse({ status: 200, description: "Menu item marked as deleted" })

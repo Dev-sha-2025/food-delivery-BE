@@ -14,7 +14,6 @@ export class UsersService {
     async getUserDetails(data: { phoneNumber?: string; email?: string, userId?: string }) {
         if (data.userId) {
             const getUserById = await this.userModel.findOne({ _id: data.userId });
-            console.log('getUserById:', getUserById);
             if (!getUserById) {
                 throw new HttpException('User not found for this userId', 404);
             }
