@@ -24,7 +24,7 @@ export class MenuController {
     return this.menuService.getRestaurantMenu(restaurantId);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   @ApiOperation({ summary: "Update menu item" })
   @ApiParam({ name: "id", example: "673bb63b9dec04c1c089ab16" })
   @ApiBody({ type: UpdateMenuDto })
