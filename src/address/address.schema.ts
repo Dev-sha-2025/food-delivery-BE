@@ -10,6 +10,7 @@ export const AddressSchema = new Schema(
     latlong: { type: String },
     isChosen: { type: Boolean, default: false },
     isDefault: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

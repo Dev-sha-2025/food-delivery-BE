@@ -31,9 +31,20 @@ export class AddressService {
             .findOne(filter);
     }
 
-     async getAllAddress() {
+    async getAllAddress() {
+
+        const filter: any = { isDeleted: false };
+         
         return await this.addressModel
-            .find().sort({ createdAt: -1 })
+            .find(filter).sort({ createdAt: -1 })
             .exec();
+    }
+    
+    async delete(addressId: string) {
+        return await this.addressModel.findByIdAndUpdate(
+            addressId,
+            { $set: { isDeleted: true } },
+            { new: true }
+        );
     }
 }

@@ -9,6 +9,7 @@ import { RestaurantsModule } from './restaurants/restaurant.module';
 import { AddressModule } from './address/address.module';
 import { NotificationModule } from './notifications/notification.module';
 import { MenuModule } from './menu/menu.module';
+import { OrderModule } from './orders/order.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MenuModule } from './menu/menu.module';
     AddressModule,
     NotificationModule,
     MenuModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

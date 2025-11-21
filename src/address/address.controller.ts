@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Get, Query, BadRequestException } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, Get, Query, BadRequestException, Delete, Param } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AddressService } from './address.service';
 import { AddressResponseDto, CreateAddressDto, GetUserAddressDto } from './address.dto';
 
@@ -39,4 +39,12 @@ export class AddressController {
     async list() {
         return this.addressService.getAllAddress();
     }
+
+     @Delete(':id')
+      @ApiOperation({ summary: 'Soft delete address (mark as deleted)' })
+      @ApiParam({ name: 'id', description: 'Address ID', example: '673bb63b9dec04c1c089ab16' })
+      @ApiResponse({ status: 200, description: 'Address soft deleted successfully' })
+      softDelete(@Param('id') id: string) {
+        return this.addressService.delete(id);
+      }
 }
