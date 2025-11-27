@@ -46,7 +46,13 @@ export class CreateOrderDto {
   })
   @IsString()
   restaurantId: string;
-
+  @ApiProperty({
+    description: 'Address ID where order is placed',
+    example: '69120ddfd617f361c1b666f5',
+  })
+  @IsString()
+  addressId: string;
+    
   @ApiProperty({
     description: 'Payment method used by user',
     example: 'COD',
@@ -140,8 +146,28 @@ export class OrderResponseDto {
   @ApiProperty({ example: false })
   isPaymentSuccess: boolean;
 
+
   @ApiProperty({ example: '2025-11-05T10:15:30.000Z' })
   orderDate: Date;
+    
+    @ApiProperty({
+        description: 'Delivery address details',
+        example: {
+            addressId: '69120ddfd617f361c1b666f5',
+            addressDetails: '123 Main St, City, Country',
+            receiverName: 'John Doe',
+            receiverPhoneNumber: '+1234567890',
+            latlong: '12.9716,77.5946',
+        },
+    })
+    deliveryAddress: {
+        addressId: string;
+        addressDetails: string;
+        receiverName: string;
+        receiverPhoneNumber: string;
+        latlong: string;
+    };
+    
 }
 
 

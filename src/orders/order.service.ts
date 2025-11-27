@@ -8,6 +8,7 @@ export class OrderService {
     constructor(
         @InjectModel('Order') private orderModel: Model<any>,
         @InjectModel('Menu') private menuModel: Model<any>,
+        @InjectModel('Address') private addressModel: Model<any>, 
     ) { }
 
     async createOrder(dto: CreateOrderDto) {
@@ -18,9 +19,6 @@ export class OrderService {
             if (!menu || menu.isDeleted) {
                 throw new NotFoundException(`Menu item not found: ${item.menuId}`);
             }
-
-            //   const itemTotal = menu.price * item.quantity;
-            //   totalBill += itemTotal;
 
             finalItems.push({
                 menuId: menu._id,
@@ -35,6 +33,13 @@ export class OrderService {
             });
         }
 
+        // Fetch address based on addressId
+        const address = await this.addressModel.findById(dto.addressId);
+
+        if (!address) {
+            throw new NotFoundException(`Address not found: ${dto.addressId}`);
+        }
+
         const order = await this.orderModel.create({
             userId: dto.userId,
             restaurantId: dto.restaurantId,
@@ -42,7 +47,14 @@ export class OrderService {
             billAmount: dto.billAmount,
             isPaymentSuccess: dto.isPaymentSuccess,
             orderItems: finalItems,
-            deliveryStatus: dto.deliveryStatus 
+            deliveryStatus: dto.deliveryStatus,
+            deliveryAddress: {
+                addressId: dto.addressId,
+                addressDetails: address.addressDetails,
+                receiverName: address?.receiverName || '',
+                receiverPhoneNumber: address?.receiverPhoneNumber || '',
+                latlong: address.latlong,
+            }, // append the address object
         });
 
         return order;
