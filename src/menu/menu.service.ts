@@ -12,7 +12,7 @@ export class MenuService {
   }
 
   async getRestaurantMenu(restaurantId: string) {
-    return await this.menuModel.find({ restaurantId, isDeleted: false }).sort({ createdOn: -1 });
+    return await this.menuModel.find({ restaurantId, isDeleted: false,itemAvailable: true }).sort({ createdOn: -1 });
   }
 
   async updateMenu(itemId: string, data: UpdateMenuDto) {
