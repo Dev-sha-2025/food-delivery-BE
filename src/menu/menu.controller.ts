@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, Query } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto,UpdateMenuDto } from './menu.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
@@ -20,8 +20,8 @@ export class MenuController {
   @ApiOperation({ summary: "Get all menu items of a restaurant" })
   @ApiParam({ name: "restaurantId", example: "REST12345" })
   @ApiResponse({ status: 200, description: "List of menu items returned" })
-  getAll(@Param('restaurantId') restaurantId: string) {
-    return this.menuService.getRestaurantMenu(restaurantId);
+  getAll(@Param('restaurantId') restaurantId: string, @Query('isAdmin') isAdmin?: boolean) {
+    return this.menuService.getRestaurantMenu(restaurantId,isAdmin || false);
   }
 
   @Patch('update/:id')

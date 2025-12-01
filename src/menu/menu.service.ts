@@ -11,7 +11,10 @@ export class MenuService {
     return await this.menuModel.create(data);
   }
 
-  async getRestaurantMenu(restaurantId: string) {
+  async getRestaurantMenu(restaurantId: string, isAdmin: boolean) {
+    if (isAdmin) {
+      return await this.menuModel.find({ restaurantId, isDeleted: false }).sort({ createdOn: -1 });
+    }
     return await this.menuModel.find({ restaurantId, isDeleted: false,itemAvailable: true }).sort({ createdOn: -1 });
   }
 
