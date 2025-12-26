@@ -30,15 +30,26 @@ export class UsersService {
         return user;
     }
     async createUser(userData: Partial<User>) {
-        const existingUser = await this.userModel.findOne({
-            $or: [
-                { email: userData.email },
-                { phoneNumber: userData.phoneNumber }
-            ]
-        });
-        if (existingUser) {
-            throw new BadRequestException('User with this email or phone number already exists');
+        const user = new this.userModel(userData);
+        return user.save();
+    }
+
+     async updateUser(userData: Partial<User>) {
+        if (!userData.email && !userData.phoneNumber) {
+            throw new BadRequestException('Either email or phone number is required');
         }
+
+        const or: any[] = [];
+        if (userData.email) or.push({ email: userData.email });
+        if (userData.phoneNumber) or.push({ phoneNumber: userData.phoneNumber });
+
+        const existingUser = await this.userModel.findOne({ $or: or });
+
+        if (existingUser) {
+            Object.assign(existingUser, userData);
+            return existingUser.save();
+        }
+
         const user = new this.userModel(userData);
         return user.save();
     }

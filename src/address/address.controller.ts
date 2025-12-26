@@ -1,7 +1,7 @@
-import { Controller, Post, Body, Get, Query, BadRequestException, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, BadRequestException, Delete, Param, Put } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AddressService } from './address.service';
-import { AddressResponseDto, CreateAddressDto, GetUserAddressDto } from './address.dto';
+import { AddressResponseDto, CreateAddressDto, GetUserAddressDto, UpdateAddressDto } from './address.dto';
 
 @ApiTags('Address')
 @Controller('address')
@@ -14,6 +14,20 @@ export class AddressController {
     @ApiResponse({ status: 400, description: 'Invalid address data' })
     async create(@Body() data: CreateAddressDto) {
         return this.addressService.createAddress(data);
+    }
+
+    @Put('update/:addressId')
+    @ApiOperation({ summary: 'Update an existing address for user', description: 'Updates an existing address for the specified user.' })
+    @ApiResponse({ status: 200, description: 'Address updated successfully', type: AddressResponseDto })
+    @ApiResponse({ status: 400, description: 'Invalid address data' })
+    async update(@Param('addressId') addressId: string, @Body() data: CreateAddressDto) {
+        if (!addressId) {
+            throw new BadRequestException('addressId is required in the URL path');
+        }
+        if (!data.userId) {
+            throw new BadRequestException('userId is required for update');
+        }
+        return this.addressService.updateAddress({ ...data, addressId });
     }
 
     @Get('/listById')

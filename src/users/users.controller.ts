@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, BadRequestException, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiOperation, ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto, CreateUserResponseDto, GetUserDetailsDto, UserResponseDto } from './users.dto';
@@ -45,5 +45,18 @@ export class UsersController {
 
         const user = await this.usersService.createUser(userInput);
         return { status: 201, data: user };
+    }
+
+    @Put('/update')
+    @ApiOperation({ summary: 'update user (if exists)' })
+    @ApiResponse({ status: 200, description: 'User updated Successfully', type: CreateUserResponseDto })
+    @ApiResponse({ status: 400, description: 'phoneNumber or email is required' })
+    async updateUser(@Body() userInput: CreateUserDto) {
+        if (!userInput || (!userInput.phoneNumber && !userInput.email)) {
+            throw new BadRequestException('phoneNumber or email is required');
+        }
+
+        const user = await this.usersService.updateUser(userInput);
+        return { status: 200, data: user };
     }
 }
