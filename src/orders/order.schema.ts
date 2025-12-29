@@ -10,7 +10,8 @@ export const OrderSchema = new Schema({
       receiverPhoneNumber: String,
       latlong: String,
     
-   },
+  },
+   transactionId: { type: String, required: true },
 
   orderItems: [
     {
@@ -34,6 +35,7 @@ export const OrderSchema = new Schema({
 export interface Order extends Document {
   userId: string;
   restaurantId: string;
+  transactionId: string;
   orderItems: {
     menuId: string;
     name: string;

@@ -61,6 +61,13 @@ export class CreateOrderDto {
   paymentMode: string;
 
   @ApiProperty({
+    description: 'Transaction ID for the payment',
+    example: 'TXN123456789',
+  })
+  @IsString()
+  transactionId: string;
+
+  @ApiProperty({
     description: 'List of order items',
     type: [OrderItemInputDto],
     example: [
@@ -145,6 +152,9 @@ export class OrderResponseDto {
 
   @ApiProperty({ example: false })
   isPaymentSuccess: boolean;
+
+  @ApiProperty({ example: 'TXN123456789' })
+  transactionId: string;
 
 
   @ApiProperty({ example: '2025-11-05T10:15:30.000Z' })

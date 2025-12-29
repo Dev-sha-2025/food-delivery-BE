@@ -23,9 +23,9 @@ export class OrderService {
             finalItems.push({
                 menuId: menu._id,
                 name: menu.name,
-                totalAmount: item.totalAmount,
+                total: item.totalAmount,
                 quantity: item.quantity,
-                pricePerQuantity: menu.price,
+                price: menu.price,
                 classification: menu.classification,
                 itemDescription: menu.itemDescription,
                 imageUrl: menu.imageUrl,
@@ -46,6 +46,7 @@ export class OrderService {
             paymentMode: dto.paymentMode,
             billAmount: dto.billAmount,
             isPaymentSuccess: dto.isPaymentSuccess,
+            transactionId: dto.transactionId,
             orderItems: finalItems,
             deliveryStatus: dto.deliveryStatus,
             deliveryAddress: {
