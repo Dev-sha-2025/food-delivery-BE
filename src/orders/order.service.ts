@@ -76,39 +76,21 @@ export class OrderService {
     }
 
     async updateOrder(orderId: string, dto: UpdateOrderDto) {
-        const order = await this.orderModel.findById(orderId);
+        if (!dto.deliveryStatus) {
+            throw new BadRequestException('deliveryStatus is required');
+        }
 
-        if (!order) {
+        const updatedOrder = await this.orderModel.findOneAndUpdate(
+            { _id: orderId },
+            { $set: { deliveryStatus: dto.deliveryStatus } },
+            { new: true, runValidators: false }
+        );
+
+        if (!updatedOrder) {
             throw new NotFoundException('Order not found');
         }
 
-        // Update items if provided
-        //   if (dto.orderItems && dto.orderItems.length > 0) {
-        //     // let totalBill = 0;
-        //     // const updatedItems: any[] = [];
-
-        //     // for (const item of dto.orderItems) {
-        //     //   const menu = await this.menuModel.findById(item.menuId);
-        //     //   if (!menu) throw new Error(`Menu not found: ${item.menuId}`);
-
-        //     //   updatedItems.push({
-        //     //     menuId: menu._id,
-        //     //     name: menu.name,
-        //     //     price: menu.price,
-        //     //     quantity: item.quantity,
-        //     //     total: itemTotal,
-        //     //   });
-        //     // }
-
-        //     order.orderItems = updatedItems;
-        //     order.billAmount = totalBill;
-        //   }
-
-        if (dto.deliveryStatus) order.deliveryStatus = dto.deliveryStatus;
-        if (dto.isPaymentSuccess !== undefined)
-            order.isPaymentSuccess = dto.isPaymentSuccess;
-
-        await order.save();
-        return order;
+        return updatedOrder;
     }
+
 }
