@@ -41,7 +41,8 @@ export class AddressController {
             if (!query.userId && !query.addressId) {
                     throw new BadRequestException('userId or addressId is required');
             }
-        return this.addressService.getUserAddress(query.userId, query.addressId);
+        const result = await this.addressService.getUserAddress(query.userId, query.addressId) || {};
+        return result;
     }
 
      @Get('/lists')
