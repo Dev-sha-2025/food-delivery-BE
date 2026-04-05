@@ -10,6 +10,7 @@ import { AddressModule } from './address/address.module';
 import { NotificationModule } from './notifications/notification.module';
 import { MenuModule } from './menu/menu.module';
 import { OrderModule } from './orders/order.module';
+import { PaymentModule } from './payment/phonepe.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { OrderModule } from './orders/order.module';
     NotificationModule,
     MenuModule,
     OrderModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
