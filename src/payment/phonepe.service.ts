@@ -48,7 +48,7 @@ export class PhonePeService implements OnModuleInit {
       .merchantOrderId(orderId)
       .amount(amountInPaise)
       .redirectUrl(
-        `https://your-frontend.com/payment-status?orderId=${orderId}`,
+        `https://jaipurkitchen.netlify.app/order-detail/${orderId}`,
       )
       .build();
 
