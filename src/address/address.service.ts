@@ -21,7 +21,7 @@ export class AddressService {
             filter.userId = userId;
         }
         return await this.addressModel
-            .findOne(filter);
+            .find(filter);
     }
 
     async getAllAddress() {
