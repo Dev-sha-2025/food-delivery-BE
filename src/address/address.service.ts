@@ -13,7 +13,7 @@ export class AddressService {
     }
 
     async getUserAddress(userId?: string, addressId?: string) {
-        const filter: any = {};
+        const filter: any = {isDeleted: false };
         if (addressId) {
             filter._id = addressId;
         }
