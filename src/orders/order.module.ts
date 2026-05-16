@@ -5,13 +5,16 @@ import { MenuSchema } from 'src/menu/menu.schema';
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 import { AddressSchema } from 'src/address/address.schema';
+import { PushModule } from 'src/push/push.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'Order', schema: OrderSchema },
-        { name: 'Menu', schema: MenuSchema },
-      {name: 'Address', schema: AddressSchema}
-    ])
+      { name: 'Menu', schema: MenuSchema },
+      { name: 'Address', schema: AddressSchema },
+    ]),
+    PushModule,
   ],
   controllers: [OrderController],
   providers: [OrderService],

@@ -1,19 +1,21 @@
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from './create-order.dto';
+import { PushService } from 'src/push/push.service';
 
 @Injectable()
 export class OrderService {
     constructor(
         @InjectModel('Order') private orderModel: Model<any>,
         @InjectModel('Menu') private menuModel: Model<any>,
-        @InjectModel('Address') private addressModel: Model<any>, 
+        @InjectModel('Address') private addressModel: Model<any>,
+        private readonly pushService: PushService,
     ) { }
 
     async createOrder(dto: CreateOrderDto) {
         const finalItems: any[] = [];
-
+        console.log("dto...",dto)
         for (const item of dto.orderItems) {
             const menu = await this.menuModel.findById(item.menuId);
             if (!menu || menu.isDeleted) {
@@ -35,6 +37,7 @@ export class OrderService {
 
         // Fetch address based on addressId
         const address = await this.addressModel.findById(dto.addressId);
+        console.log("address...",address)
 
         if (!address) {
             throw new NotFoundException(`Address not found: ${dto.addressId}`);
@@ -57,6 +60,9 @@ export class OrderService {
                 latlong: address.latlong,
             }, // append the address object
         });
+
+        // Fire-and-forget push notification — must not slow down the order response
+        this.pushService.notifyNewOrder(order).catch((err) => { console.log("notification error",err)/* swallowed — push failure must never reject the order */ });
 
         return order;
     }

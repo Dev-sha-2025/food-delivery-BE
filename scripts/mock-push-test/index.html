@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔔 Web Push E2E Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-bottom: 24px; }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 1rem; margin-bottom: 12px; color: #7dd3fc; }
+    label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; margin-top: 10px; }
+    input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #e2e8f0;
+      font-size: 0.875rem;
+    }
+    input:focus { outline: 2px solid #38bdf8; border-color: transparent; }
+    button {
+      margin-top: 14px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: opacity 0.15s;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-blue  { background: #0ea5e9; color: #fff; }
+    .btn-green { background: #22c55e; color: #fff; }
+    .btn-red   { background: #ef4444; color: #fff; }
+    .btn-row   { display: flex; gap: 10px; flex-wrap: wrap; }
+    .status {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: 40px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #a3e635;
+    }
+    .status.error { color: #f87171; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-ok  { background: #166534; color: #86efac; }
+    .badge-no  { background: #7f1d1d; color: #fca5a5; }
+    .badge-wait { background: #713f12; color: #fde68a; }
+    hr { border: none; border-top: 1px solid #334155; margin: 6px 0 16px 0; }
+  </style>
+</head>
+<body>
+
+<h1>🔔 Web Push — E2E Test Page</h1>
+<p class="subtitle">Mock frontend to test the backend without the real admin portal</p>
+
+<!-- ── Step 1: Config ──────────────────────────────────── -->
+<div class="card">
+  <h2>⚙️ Step 1 — Configuration</h2>
+  <hr>
+  <label>Backend URL</label>
+  <input id="backendUrl" value="https://food-delivery-be-wekb.onrender.com" />
+
+  <label>VAPID Public Key</label>
+  <input id="vapidKey" value="BKTrbaTjROIZqprZ-r6SGPdxVYaWL-DBdjKerQOPtEoOGmc1aYp1XEvn5wyczzowJjUssA-JP6Ym5ptnyDIhe6o" />
+
+  <label>Restaurant ID (must match the order you'll place)</label>
+  <input id="restaurantId" value="69120ef5d617f361c1b666f7" />
+</div>
+
+<!-- ── Step 2: Subscribe ───────────────────────────────── -->
+<div class="card">
+  <h2>📲 Step 2 — Subscribe this browser</h2>
+  <hr>
+  <p style="font-size:0.82rem; color:#94a3b8; margin-bottom:8px;">
+    Registers a real service worker, asks for notification permission,
+    then POSTs the subscription to <code>/api/push/subscribe</code>.
+    Do this once per device/browser.
+  </p>
+  <div class="btn-row">
+    <button class="btn-blue" id="btnSubscribe" onclick="doSubscribe()">Subscribe &amp; Register</button>
+    <button class="btn-red"  id="btnUnsub"    onclick="doUnsubscribe()">Unsubscribe</button>
+  </div>
+  <div class="status" id="subStatus">Waiting...</div>
+</div>
+
+<!-- ── Step 3: Test push ──────────────────────────────── -->
+<div class="card">
+  <h2>🚀 Step 3 — Test: trigger a push via the order API</h2>
+  <hr>
+  <p style="font-size:0.82rem; color:#94a3b8; margin-bottom:8px;">
+    After subscribing, fill in real MongoDB IDs and click "Place Test Order".
+    If a subscription exists for the restaurantId, the backend will push a notification immediately.
+    <strong>Lock the screen first</strong> to prove it works when the app is closed.
+  </p>
+
+  <label>User ID</label>
+  <input id="userId" placeholder="690b61a1f500613ce0c04bea" />
+
+  <label>Address ID</label>
+  <input id="addressId" placeholder="69120ddfd617f361c1b666f5" />
+
+  <label>Menu Item ID</label>
+  <input id="menuId" placeholder="691210c7d617f361c1b666fb" />
+
+  <label>Bill Amount (₹)</label>
+  <input id="billAmount" type="number" value="420" />
+
+  <button class="btn-green" onclick="placeOrder()">Place Test Order</button>
+  <div class="status" id="orderStatus">Waiting...</div>
+</div>
+
+<!-- ── Step 4: Debug ──────────────────────────────────── -->
+<div class="card">
+  <h2>🔍 Step 4 — Debug: check current subscription</h2>
+  <hr>
+  <button class="btn-blue" onclick="showCurrentSub()">Show current subscription object</button>
+  <div class="status" id="debugStatus">Click above to inspect</div>
+</div>
+
+
+<script>
+// ─── helpers ────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function log(elId, msg, isError = false) {
+  const el = $(elId);
+  el.textContent = msg;
+  el.className = 'status' + (isError ? ' error' : '');
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
+// ─── register service worker ────────────────────────────────
+async function getSwRegistration() {
+  if (!('serviceWorker' in navigator)) throw new Error('Service workers not supported in this browser');
+  // Register sw.js from the same directory as this file
+  const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+  await navigator.serviceWorker.ready;
+  return reg;
+}
+
+// ─── STEP 2: subscribe ──────────────────────────────────────
+async function doSubscribe() {
+  $('btnSubscribe').disabled = true;
+  try {
+    log('subStatus', '⏳ Registering service worker...');
+
+    const reg = await getSwRegistration();
+    log('subStatus', '⏳ Service worker ready. Requesting notification permission...');
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      throw new Error(`Notification permission ${permission}. Go to browser settings and allow notifications for this page.`);
+    }
+
+    log('subStatus', '⏳ Permission granted. Subscribing to push service...');
+
+    const vapidKey = $('vapidKey').value.trim();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidKey),
+    });
+
+    log('subStatus', '⏳ Subscribed locally. Sending to backend...');
+
+    const backendUrl = $('backendUrl').value.trim();
+    const restaurantId = $('restaurantId').value.trim();
+
+    const resp = await fetch(`${backendUrl}/api/push/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: sub.toJSON(), restaurantId }),
+    });
+
+    const json = await resp.json();
+
+    if (resp.ok && json.ok) {
+      log('subStatus',
+        `✅ SUCCESS — subscription saved to DB!\n\nEndpoint: ${sub.endpoint}\n\nYou can now lock the screen and place a test order.`
+      );
+    } else {
+      throw new Error(`Backend returned: ${resp.status} ${JSON.stringify(json)}`);
+    }
+  } catch (err) {
+    log('subStatus', `❌ ERROR: ${err.message}`, true);
+  } finally {
+    $('btnSubscribe').disabled = false;
+  }
+}
+
+// ─── unsubscribe ─────────────────────────────────────────────
+async function doUnsubscribe() {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('./');
+    if (!reg) { log('subStatus', 'No service worker registered.', true); return; }
+    const sub = await reg.pushManager.getSubscription();
+    if (!sub) { log('subStatus', 'No active subscription found.'); return; }
+    await sub.unsubscribe();
+    log('subStatus', '✅ Unsubscribed from push. The backend will auto-prune this endpoint on the next push attempt (410 Gone).');
+  } catch (err) {
+    log('subStatus', `❌ ${err.message}`, true);
+  }
+}
+
+// ─── STEP 3: place order ─────────────────────────────────────
+async function placeOrder() {
+  const backendUrl    = $('backendUrl').value.trim();
+  const restaurantId  = $('restaurantId').value.trim();
+  const userId        = $('userId').value.trim();
+  const addressId     = $('addressId').value.trim();
+  const menuId        = $('menuId').value.trim();
+  const billAmount    = Number($('billAmount').value);
+
+  if (!userId || !addressId || !menuId) {
+    log('orderStatus', '❌ Fill in User ID, Address ID and Menu Item ID first.', true);
+    return;
+  }
+
+  log('orderStatus', '⏳ Placing order...');
+
+  try {
+    const resp = await fetch(`${backendUrl}/api/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId,
+        restaurantId,
+        addressId,
+        paymentMode: 'COD',
+        transactionId: 'TXN-PUSH-TEST-' + Date.now(),
+        billAmount,
+        isPaymentSuccess: false,
+        deliveryStatus: 'Pending',
+        orderItems: [{ menuId, quantity: 2, totalAmount: billAmount }],
+      }),
+    });
+
+    const json = await resp.json();
+
+    if (resp.ok) {
+      log('orderStatus',
+        `✅ Order created! ID: ${json._id}\n\nPush notification should appear on any subscribed device within 1–2 seconds.\n\nFull response:\n${JSON.stringify(json, null, 2)}`
+      );
+    } else {
+      throw new Error(`${resp.status}: ${JSON.stringify(json)}`);
+    }
+  } catch (err) {
+    log('orderStatus', `❌ ERROR: ${err.message}`, true);
+  }
+}
+
+// ─── STEP 4: debug ───────────────────────────────────────────
+async function showCurrentSub() {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('./');
+    if (!reg) { log('debugStatus', 'No service worker registered yet.'); return; }
+    const sub = await reg.pushManager.getSubscription();
+    if (!sub) { log('debugStatus', 'No active push subscription on this browser.'); return; }
+    log('debugStatus', JSON.stringify(sub.toJSON(), null, 2));
+  } catch (err) {
+    log('debugStatus', `❌ ${err.message}`, true);
+  }
+}
+</script>
+
+</body>
+</html>
