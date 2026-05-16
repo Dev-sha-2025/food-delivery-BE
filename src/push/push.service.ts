@@ -63,6 +63,10 @@ export class PushService implements OnModuleInit {
       restaurantId: String(order.restaurantId),
     });
 
+    this.logger.log(
+      `notifyNewOrder: restaurantId=${order.restaurantId} | subscriptions found=${subs.length}`,
+    );
+
     if (!subs.length) return;
 
     const orderIdShort = String(order._id).substring(0, 8);
@@ -75,14 +79,25 @@ export class PushService implements OnModuleInit {
 
     const payload = JSON.stringify({
       title: `🔔 New Order #${orderIdShort}`,
-      body: `${itemCount} item${itemCount !== 1 ? 's' : ''} - ${amount}${customer}`,
+      body: `${itemCount} item${itemCount !== 1 ? 's' : ''} · ${amount}${customer}\nTap to view details`,
       tag: `order-${order._id}`,
       url: `/orders/${order._id}`,
       orderId: String(order._id),
+
+      // ── Rich-notification fields (Swiggy / Zomato style) ──────────────
+      // Publicly accessible food-order illustration shown as hero image
+      image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
+
+      // Inline action buttons rendered below the body on Chrome/Edge/Android
+      actions: [
+        { action: 'view',    title: '👁 View Order'  },
+        { action: 'dismiss', title: '✕ Dismiss'      },
+      ],
     });
 
     await Promise.all(
       subs.map(async (sub) => {
+        this.logger.log(`Sending push to endpoint: ${sub.endpoint.substring(0, 60)}...`);
         try {
           await webpush.sendNotification(
             {
@@ -92,6 +107,7 @@ export class PushService implements OnModuleInit {
             payload,
             { TTL: 60 },
           );
+          this.logger.log(`Push sent successfully to: ${sub.endpoint.substring(0, 60)}...`);
         } catch (err: any) {
           // 410 Gone or 404 Not Found = subscription is dead, prune it
           if (err.statusCode === 410 || err.statusCode === 404) {
