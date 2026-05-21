@@ -6,6 +6,8 @@ export const RestaurantSchema = new Schema(
     address: { type: String },
     latLng: { type: String },
     isActive: { type: Boolean, default: true },
+    fromTime: { type: String },
+    toTime: { type: String },
   },
   { collection: 'restaurants', strict :false,timestamps: true }
 );
@@ -15,4 +17,6 @@ export interface Restaurant extends Document {
   address?: string;
   latLng?: string;
   isActive: boolean;
+  fromTime?: string;
+  toTime?: string;
 }
